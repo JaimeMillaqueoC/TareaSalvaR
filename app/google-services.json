@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "634686710691",
+    "firebase_url": "https://tareasalvasemestre.firebaseio.com",
+    "project_id": "tareasalvasemestre",
+    "storage_bucket": "tareasalvasemestre.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:634686710691:android:bbaa340320c357dd",
+        "android_client_info": {
+          "package_name": "e.jaime.tareasalvar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "634686710691-4q60trohr2q1pulsvg35qnmsqe0t4g7t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoFqO4rt8zglco33OfhZIiXcgF_8r5kPc"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
