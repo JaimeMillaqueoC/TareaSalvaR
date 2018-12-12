@@ -7,16 +7,11 @@ public class Producto {
     private String cantidad;
     private String precio;
 
-    public Producto(){
-
-    }
-
     public Producto(String id, String nombre, String cantidad, String precio){
         this.setNombre(nombre);
         this.setCantidad(cantidad);
         this.setPrecio(precio);
     }
-
 
     public String getNombre() {
         return nombre;

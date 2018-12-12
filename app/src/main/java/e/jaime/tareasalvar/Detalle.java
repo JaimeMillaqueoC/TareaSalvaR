@@ -6,110 +6,92 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.ArrayList;
-
 public class Detalle extends AppCompatActivity {
 
     //Variables
-
+    AlertDialog.Builder alerta;
+    AlertDialog dialogo;
     Detalle d = this;
-    VentanaP vP = new VentanaP();
-    DatabaseReference datosProductos;
+    DatabaseReference fbProductos;
+    DatabaseReference fbLista;
+    String nombreLista;
+    EditText txtNombreLista;
     EditText txtNombreProducto2;
     EditText txtPrecio;
     EditText txtCantidad;
     Button btnAceptar2;
+    Button btnCerrar;
 
-    private ArrayList<String> datos;
-    private ArrayAdapter<String> adaptador1;
     @Override
     protected void onCreate (Bundle savedInstantsState){
         super.onCreate(savedInstantsState);
         setContentView(R.layout.detalle);
 
-        //Se crea el padre 'productos' en firebase si no existe'
-        datosProductos = FirebaseDatabase.getInstance().getReference("productos");
-        //Se almacenan datos en variables
-        txtNombreProducto2 = (EditText) findViewById(R.id.txtNombreProducto2);
-        txtCantidad = (EditText) findViewById(R.id.txtCantidad);
-        txtPrecio = (EditText) findViewById(R.id.txtPrecio);
+        //Referenciar Variables
+        txtNombreLista = (EditText) findViewById(R.id.txtNombreLista);
         btnAceptar2 = (Button) findViewById(R.id.btnaceptar2);
+        btnCerrar = (Button) findViewById(R.id.btncancelar2);
+        txtNombreProducto2 = (EditText)  findViewById(R.id.txtNombreProducto2);
+        txtPrecio = (EditText)  findViewById(R.id.txtPrecio);
+        txtCantidad = (EditText)  findViewById(R.id.txtCantidad);
+        nombreLista = VentanaP.getNombreLista();
 
-        btnAceptar2.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                añadirProducto();
-            }
-        });
+        //Alerta
+        alerta = new AlertDialog.Builder(d);
+        alerta.setTitle("ALERTA");
+        alerta.setMessage("Debe rellenar todos los campos");
+        dialogo = alerta.create();
 
+        //Creamos las referencias de Firebase
+        fbLista = FirebaseDatabase.getInstance().getReference("listas"); //Firebase arma una referencia a un 'listas'
+        fbProductos = fbLista.child(nombreLista+"/productos"); //Esta referencia es el hijo de 'listas'
+
+        //Configuramos botones aceptar | cancelar.
         configurarBoton();
     }
 
-    private void añadirProducto(){
-        String nombre = txtNombreProducto2.getText().toString().trim();
-        String cantidad = txtCantidad.getText().toString().trim();
-        String precio = txtCantidad.getText().toString().trim();
+    private void añadirProducto(String nombre, String cantidad, String precio){
+        //Obtenemos una key única para nuestro producto
+        String id = fbProductos.push().getKey();
 
-        if(!TextUtils.isEmpty(nombre)){
+        Producto p = new Producto(id, nombre, cantidad, precio);
 
-            //Obtenemos una key para nuestro producto
-            String id = datosProductos.push().getKey();
-
-            Producto p = new Producto(id, nombre, cantidad, precio);
-
-            //Ahora creamos un hijo con el valor de id y le pasamos el producto
-            datosProductos.child(id).setValue(p);
-        } else {
-            Toast.makeText(this, "Debes introducir un nombre", Toast.LENGTH_LONG).show();
-        }
+        //Ahora creamos un hijo con el valor de id y le pasamos el producto
+        fbProductos.child(id).setValue(p);
     }
 
     private void configurarBoton(){
-        Button btnaceptar = (Button) findViewById(R.id.btnaceptar2);
-        Button btnCerrar = (Button) findViewById(R.id.btncancelar2);
-        final EditText nombreP = (EditText)  findViewById(R.id.txtNombreProducto2);
-        final EditText edtitT = (EditText)  findViewById(R.id.txtPrecio);
-        final EditText edtitT2 = (EditText)  findViewById(R.id.txtCantidad);
-        btnaceptar.setOnClickListener(new View.OnClickListener(){
+        //Configurar botón aceptar
+        btnAceptar2.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                AlertDialog.Builder alerta = new AlertDialog.Builder(d);
-                String nombre = nombreP.getText().toString();
-                String ed = edtitT.getText().toString();
-                String ed2 = edtitT2.getText().toString();
 
-                if (nombre.equals("") || ed.equals("") ||  ed2.equals("")){
-                    alerta.setTitle("ALERTA");
-                    alerta.setMessage("Debe rellenar todos los campos");
-                    AlertDialog dialogo = alerta.create();
+                String nombre = txtNombreProducto2.getText().toString().trim();
+                String precio = txtPrecio.getText().toString().trim();
+                String cantidad = txtCantidad.getText().toString().trim();
+
+                //Handler en caso de que no se rellenen los campos
+                if (TextUtils.isEmpty(nombre) || TextUtils.isEmpty(precio) || TextUtils.isEmpty(cantidad)){
                     dialogo.show();
-
-
                 }else {
-                    ListView lista = (ListView) vP.findViewById(R.id.lista);
-                    datos =new ArrayList<String>();
+                    añadirProducto(nombre, precio, cantidad);
                     finish();
                 }
             }
         });
+        //Configurar botón cancelar
         btnCerrar.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
                 finish();
             }
         });
-
     }
-
-    //Conecc. a Firebase
 
 }
